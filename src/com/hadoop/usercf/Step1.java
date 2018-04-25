@@ -17,7 +17,8 @@ import java.io.IOException;
  * USER: Administrator
  * DATE: 2018/4/19
  *
- * @描述:
+ * @描述:第一步操作原始文件，提取出一位用户看过的电影数目，文件输出结果：
+ * 1\t272 表示用户1评价过的电影数为272部
  */
 public class Step1 {
 

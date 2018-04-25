@@ -19,7 +19,9 @@ import java.util.List;
  * USER: Administrator
  * DATE: 2018/4/19
  *
- * @描述:
+ * @描述:第二步将原始数据分解成电影倒排表信息，对看过某一部电影的用户进行两两计算，表示
+ * 他们之间的存在一部交集电影。文件输出形式为：892,622\t1 表示用户892和622之间有一部交集的电影
+ * 这个文件用于后续计算两两用户之间所有的相交电影个数
  */
 public class Step2 {
     public static class Step2Mapper extends Mapper<LongWritable,Text,IntWritable,IntWritable>{
