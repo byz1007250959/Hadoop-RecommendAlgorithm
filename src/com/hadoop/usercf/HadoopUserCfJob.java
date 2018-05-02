@@ -1,9 +1,13 @@
 package com.hadoop.usercf;
 
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.chain.ChainMapper;
+import org.apache.hadoop.mapreduce.lib.chain.ChainReducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.jobcontrol.ControlledJob;
 import org.apache.hadoop.mapreduce.lib.jobcontrol.JobControl;
@@ -24,6 +28,8 @@ public class HadoopUserCfJob {
         String step3out="D:/output/step3";
         String step2out="D:/output/step2";
         String step4out="D:/output/step4";
+        String step5out="D:/output/step5";
+        String step6out="D:/output/step6";
         //step1设置
         Job step1=Job.getInstance();
         step1.setJarByClass(Step1.class);
@@ -78,17 +84,48 @@ public class HadoopUserCfJob {
         FileInputFormat.addInputPath(step4, new Path(step2out));
         FileOutputFormat.setOutputPath(step4, new Path(step4out));
 
+        //step5设置
+        Job step5= Job.getInstance();
+        step5.setJarByClass(Step5.class);
+        step5.setJobName("step5");
+        ChainMapper.addMapper(step5, Step5.Step5Mapper.class,LongWritable.class,Text.class,Text.class,Text.class,step5.getConfiguration());
+        ChainReducer.setReducer(step5,Step5.Step5Reducer.class,Text.class,Text.class,Text.class,DoubleWritable.class,step5.getConfiguration());
+        ChainReducer.addMapper(step5,Step5.Step5Mapper2.class,Text.class,DoubleWritable.class,IntWritable.class,Text.class,step5.getConfiguration());
+        FileInputFormat.addInputPath(step5, new Path(step3out));
+        FileInputFormat.addInputPath(step5,new Path(step4out));
+        FileOutputFormat.setOutputPath(step5, new Path(step5out));
+
+        //step6设置
+        Job step6=Job.getInstance();
+        step6.setJarByClass(Step6.class);
+        step6.setJobName("step6");
+        step6.setMapperClass(Step6.Step6Mapper.class);
+        step6.setReducerClass(Step6.Step6Reducer.class);
+        step6.setMapOutputKeyClass(IntWritable.class);
+        step6.setMapOutputValueClass(Text.class);
+        step6.setOutputKeyClass(IntWritable.class);
+        step6.setOutputValueClass(Text.class);
+        FileInputFormat.addInputPath(step6, new Path(step5out));
+        FileOutputFormat.setOutputPath(step6, new Path(step6out));
+
         ControlledJob controlledJob1=new ControlledJob(step1.getConfiguration());
         ControlledJob controlledJob2=new ControlledJob(step2.getConfiguration());
         ControlledJob controlledJob3=new ControlledJob(step3.getConfiguration());
         ControlledJob controlledJob4=new ControlledJob(step4.getConfiguration());
+        ControlledJob controlledJob5=new ControlledJob(step5.getConfiguration());
+        ControlledJob controlledJob6=new ControlledJob(step6.getConfiguration());
         controlledJob3.addDependingJob(controlledJob1);
         controlledJob4.addDependingJob(controlledJob2);
+        controlledJob5.addDependingJob(controlledJob3);
+        controlledJob5.addDependingJob(controlledJob4);
+        controlledJob6.addDependingJob(controlledJob5);
         JobControl jobControl=new JobControl("usercfControl");
         jobControl.addJob(controlledJob1);
         jobControl.addJob(controlledJob2);
         jobControl.addJob(controlledJob3);
         jobControl.addJob(controlledJob4);
+        jobControl.addJob(controlledJob5);
+        jobControl.addJob(controlledJob6);
         Thread thread=new Thread(jobControl);
         thread.start();
         while (!jobControl.allFinished()){
