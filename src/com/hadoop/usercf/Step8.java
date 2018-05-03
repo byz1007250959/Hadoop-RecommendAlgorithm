@@ -18,7 +18,10 @@ import java.util.*;
  * USER: Administrator
  * DATE: 2018/5/2
  *
- * @描述:
+ * @描述:读取第7步骤的输出文件，以用户的id为key，再reduce阶段对所有电影的
+ * 感兴趣程度进行排序，对用户推荐排名前limitmovie部电影(目前暂定20)。输出结果形如：
+ * 1	50,174,172,98,176,56,173,96,474,64,144,100,181,168,195,183,7,4,69,12,
+ * 2	100,286,50,269,124,127,276,237,313,275,14,258,257,515,9,302,285,297,181,7,
  */
 public class Step8 {
     public static class Step8Mapper extends Mapper<LongWritable,Text,IntWritable,Text>{

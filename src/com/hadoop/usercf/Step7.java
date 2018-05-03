@@ -21,7 +21,13 @@ import java.util.Map;
  * USER: Administrator
  * DATE: 2018/5/2
  *
- * @描述:
+ * @描述:读取第六步的输出文件和原始文件，将电影信息与用户的邻居信息关联起来
+ * 同时构造电影的倒排信息，在map阶段以电影id为key，在reduce阶段以每一部电影对所有
+ * 的用户计算一次用户对该电影的感兴趣程度。输出结果形如：
+ * 1	1,20.29633
+ * 2	1,10.23537
+ * 表示用户1对电影id为1的电影感兴趣程度为20,29633
+ * 用户2对电影id为1的电影感兴趣程度为10.23537
  */
 public class Step7 {
     public static class Step7Mapper extends Mapper<LongWritable,Text,IntWritable,Text>{

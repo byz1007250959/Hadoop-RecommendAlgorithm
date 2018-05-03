@@ -30,6 +30,8 @@ public class HadoopUserCfJob {
         String step4out="D:/output/step4";
         String step5out="D:/output/step5";
         String step6out="D:/output/step6";
+        String step7out="D:/output/step7";
+        String step8out="D:/output/step8";
         //step1设置
         Job step1=Job.getInstance();
         step1.setJarByClass(Step1.class);
@@ -108,17 +110,48 @@ public class HadoopUserCfJob {
         FileInputFormat.addInputPath(step6, new Path(step5out));
         FileOutputFormat.setOutputPath(step6, new Path(step6out));
 
+        //step7设置
+        Job step7=Job.getInstance();
+        step7.setJarByClass(Step7.class);
+        step7.setJobName("step7");
+        step7.setMapperClass(Step7.Step7Mapper.class);
+        step7.setReducerClass(Step7.Step7Reducer.class);
+        step7.setMapOutputKeyClass(IntWritable.class);
+        step7.setMapOutputValueClass(Text.class);
+        step7.setOutputKeyClass(IntWritable.class);
+        step7.setOutputValueClass(Text.class);
+        FileInputFormat.addInputPath(step7,new Path(step6out));
+        FileInputFormat.addInputPath(step7,new Path(sourcePath));
+        FileOutputFormat.setOutputPath(step7,new Path(step7out));
+
+        //step8设置
+        Job step8=Job.getInstance();
+        step8.setJarByClass(Step8.class);
+        step8.setJobName("step8");
+        step8.setMapperClass(Step8.Step8Mapper.class);
+        step8.setReducerClass(Step8.Step8Reducer.class);
+        step8.setMapOutputKeyClass(IntWritable.class);
+        step8.setMapOutputValueClass(Text.class);
+        step8.setOutputKeyClass(IntWritable.class);
+        step8.setOutputValueClass(Text.class);
+        FileInputFormat.addInputPath(step8,new Path(step7out));
+        FileOutputFormat.setOutputPath(step8,new Path(step8out));
+
         ControlledJob controlledJob1=new ControlledJob(step1.getConfiguration());
         ControlledJob controlledJob2=new ControlledJob(step2.getConfiguration());
         ControlledJob controlledJob3=new ControlledJob(step3.getConfiguration());
         ControlledJob controlledJob4=new ControlledJob(step4.getConfiguration());
         ControlledJob controlledJob5=new ControlledJob(step5.getConfiguration());
         ControlledJob controlledJob6=new ControlledJob(step6.getConfiguration());
+        ControlledJob controlledJob7=new ControlledJob(step7.getConfiguration());
+        ControlledJob controlledJob8=new ControlledJob(step8.getConfiguration());
         controlledJob3.addDependingJob(controlledJob1);
         controlledJob4.addDependingJob(controlledJob2);
         controlledJob5.addDependingJob(controlledJob3);
         controlledJob5.addDependingJob(controlledJob4);
         controlledJob6.addDependingJob(controlledJob5);
+        controlledJob7.addDependingJob(controlledJob6);
+        controlledJob8.addDependingJob(controlledJob7);
         JobControl jobControl=new JobControl("usercfControl");
         jobControl.addJob(controlledJob1);
         jobControl.addJob(controlledJob2);
@@ -126,6 +159,8 @@ public class HadoopUserCfJob {
         jobControl.addJob(controlledJob4);
         jobControl.addJob(controlledJob5);
         jobControl.addJob(controlledJob6);
+        jobControl.addJob(controlledJob7);
+        jobControl.addJob(controlledJob8);
         Thread thread=new Thread(jobControl);
         thread.start();
         while (!jobControl.allFinished()){
