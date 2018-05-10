@@ -36,14 +36,15 @@ public class UserInterestLevel implements Comparable<UserInterestLevel>{
 
     @Override
     public int compareTo(UserInterestLevel o) {
-        double otherlevel=o.getInterestLevel();
-        double mylevel=this.getInterestLevel();
-        if(mylevel-otherlevel>0)
-            return 1;
-        else if(mylevel-otherlevel<0)
-            return -1;
-        else
-            return 0;
+        return this.getInterestLevel().compareTo(o.getInterestLevel());
+//        double otherlevel=o.getInterestLevel();
+//        double mylevel=this.getInterestLevel();
+//        if(mylevel-otherlevel>0)
+//            return 1;
+//        else if(mylevel-otherlevel<0)
+//            return -1;
+//        else
+//            return 0;
 
     }
 
